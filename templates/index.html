@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>포춘쿠키 명언 생성기</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        let clickCount = 0;
+
+        function generateQuote() {
+            fetch('/generate-quote', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('quote').textContent = `오늘의 명언: ${data.quote}`;
+                document.getElementById('cookie-image').src = "{{ url_for('static', filename='cookie_after.jpg') }}";
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function handleClick() {
+            clickCount += 1;
+            if (clickCount >= 3) {
+                generateQuote();
+                clickCount = 0;
+            }
+        }
+
+        function reset() {
+            clickCount = 0;
+            document.getElementById('quote').textContent = '';
+            document.getElementById('cookie-image').src = "{{ url_for('static', filename='cookie_before.jpg') }}";
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>포츈쿠키 명언 생성기</h1>
+        <h4>포츈쿠기 이미지를 3번 눌러 오늘의 명언을 확인해보세요!</h4>
+        <div class="image-container">
+            <img id="cookie-image" src="{{ url_for('static', filename='cookie_before.jpg') }}" alt="포츈쿠키 이미지"
+                 onclick="handleClick()" onmouseover="handleMouseOver()" onmouseout="handleMouseOut()">
+            <p id="quote"></p>
+        </div>
+        <p id="click-count">클릭 횟수: 0</p>
+        <div>
+            <button onclick="reset()">초기화</button>
+        </div>
+    </div>
+</body>
+</html>
